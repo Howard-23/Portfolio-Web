@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Particle {
   id: number;
@@ -11,6 +11,7 @@ interface Particle {
   duration: number;
   delay: number;
   color: string;
+  driftX: number;
 }
 
 interface Orb {
@@ -33,7 +34,7 @@ interface Star {
 }
 
 // Enhanced FloatingParticles with more colors and effects
-export function FloatingParticles({ count = 50 }: { count?: number }) {
+export function FloatingParticles({ count = 50, disableAnimation = false }: { count?: number; disableAnimation?: boolean }) {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export function FloatingParticles({ count = 50 }: { count?: number }) {
       duration: Math.random() * 15 + 10,
       delay: Math.random() * 8,
       color: colors[Math.floor(Math.random() * colors.length)],
+      driftX: Math.random() * 50 - 25,
     }));
     setParticles(newParticles);
   }, [count]);
@@ -70,7 +72,7 @@ export function FloatingParticles({ count = 50 }: { count?: number }) {
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
-          className="absolute rounded-full"
+          className="absolute rounded-full transform-gpu will-change-transform"
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
@@ -79,18 +81,26 @@ export function FloatingParticles({ count = 50 }: { count?: number }) {
             backgroundColor: particle.color,
             boxShadow: `0 0 ${particle.size * 3}px ${particle.color}, 0 0 ${particle.size * 6}px ${particle.color}`,
           }}
-          animate={{
-            y: [-30, -150, -30],
-            opacity: [0, 1, 0],
-            scale: [0.3, 1.2, 0.3],
-            x: [0, Math.random() * 50 - 25, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            disableAnimation
+              ? { opacity: 0.45 }
+              : {
+                  y: [-30, -150, -30],
+                  opacity: [0, 1, 0],
+                  scale: [0.3, 1.2, 0.3],
+                  x: [0, particle.driftX, 0],
+                }
+          }
+          transition={
+            disableAnimation
+              ? undefined
+              : {
+                  duration: particle.duration,
+                  delay: particle.delay,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+          }
         />
       ))}
     </div>
@@ -98,7 +108,7 @@ export function FloatingParticles({ count = 50 }: { count?: number }) {
 }
 
 // Glowing Orbs - Large ambient background orbs
-export function GlowingOrbs({ count = 8 }: { count?: number }) {
+export function GlowingOrbs({ count = 8, disableAnimation = false }: { count?: number; disableAnimation?: boolean }) {
   const [orbs, setOrbs] = useState<Orb[]>([]);
 
   useEffect(() => {
@@ -128,7 +138,7 @@ export function GlowingOrbs({ count = 8 }: { count?: number }) {
       {orbs.map((orb) => (
         <motion.div
           key={orb.id}
-          className="absolute rounded-full blur-3xl"
+          className={`absolute rounded-full transform-gpu will-change-transform ${disableAnimation ? "blur-2xl" : "blur-3xl"}`}
           style={{
             left: `${orb.x}%`,
             top: `${orb.y}%`,
@@ -137,17 +147,25 @@ export function GlowingOrbs({ count = 8 }: { count?: number }) {
             backgroundColor: orb.color,
             transform: "translate(-50%, -50%)",
           }}
-          animate={{
-            y: [0, -50, 0],
-            x: [0, 30, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: orb.duration,
-            delay: orb.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            disableAnimation
+              ? { opacity: 0.18 }
+              : {
+                  y: [0, -50, 0],
+                  x: [0, 30, 0],
+                  scale: [1, 1.1, 1],
+                }
+          }
+          transition={
+            disableAnimation
+              ? undefined
+              : {
+                  duration: orb.duration,
+                  delay: orb.delay,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+          }
         />
       ))}
     </div>
@@ -155,7 +173,7 @@ export function GlowingOrbs({ count = 8 }: { count?: number }) {
 }
 
 // Star Field - Static twinkling stars
-export function StarField({ count = 100 }: { count?: number }) {
+export function StarField({ count = 100, disableAnimation = false }: { count?: number; disableAnimation?: boolean }) {
   const [stars, setStars] = useState<Star[]>([]);
 
   useEffect(() => {
@@ -183,15 +201,23 @@ export function StarField({ count = 100 }: { count?: number }) {
             height: star.size,
             opacity: star.opacity,
           }}
-          animate={{
-            opacity: [star.opacity * 0.3, star.opacity, star.opacity * 0.3],
-            scale: [0.8, 1.2, 0.8],
-          }}
-          transition={{
-            duration: star.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            disableAnimation
+              ? undefined
+              : {
+                  opacity: [star.opacity * 0.3, star.opacity, star.opacity * 0.3],
+                  scale: [0.8, 1.2, 0.8],
+                }
+          }
+          transition={
+            disableAnimation
+              ? undefined
+              : {
+                  duration: star.duration,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+          }
         />
       ))}
     </div>
@@ -199,53 +225,36 @@ export function StarField({ count = 100 }: { count?: number }) {
 }
 
 // Nebula effect - Subtle color clouds
-export function NebulaClouds() {
+export function NebulaClouds({ disableAnimation = false, compact = false }: { disableAnimation?: boolean; compact?: boolean }) {
+  const firstSize = compact ? "w-[360px] h-[360px]" : "w-[800px] h-[800px]";
+  const secondSize = compact ? "w-[460px] h-[460px]" : "w-[1000px] h-[1000px]";
+  const thirdSize = compact ? "w-[280px] h-[280px]" : "w-[600px] h-[600px]";
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       <motion.div
-        className="absolute top-0 left-0 w-[800px] h-[800px] rounded-full opacity-20"
+        className={`absolute top-0 left-0 rounded-full opacity-20 transform-gpu will-change-transform ${firstSize}`}
         style={{
           background: "radial-gradient(circle, rgba(233, 69, 96, 0.3) 0%, transparent 70%)",
         }}
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.15, 0.25, 0.15],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={disableAnimation ? { opacity: 0.12 } : { scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
+        transition={disableAnimation ? undefined : { duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-0 right-0 w-[1000px] h-[1000px] rounded-full opacity-15"
+        className={`absolute bottom-0 right-0 rounded-full opacity-15 transform-gpu will-change-transform ${secondSize}`}
         style={{
           background: "radial-gradient(circle, rgba(153, 50, 204, 0.3) 0%, transparent 70%)",
         }}
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.1, 0.2, 0.1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={disableAnimation ? { opacity: 0.1 } : { scale: [1.2, 1, 1.2], opacity: [0.1, 0.2, 0.1] }}
+        transition={disableAnimation ? undefined : { duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10"
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 transform-gpu will-change-transform ${thirdSize}`}
         style={{
           background: "radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, transparent 70%)",
         }}
-        animate={{
-          scale: [1, 1.15, 1],
-          rotate: [0, 180, 360],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+        animate={disableAnimation ? { opacity: 0.08 } : { scale: [1, 1.15, 1], rotate: [0, 180, 360] }}
+        transition={disableAnimation ? undefined : { duration: 20, repeat: Infinity, ease: "linear" }}
       />
     </div>
   );
@@ -264,7 +273,7 @@ export function GridOverlay() {
         backgroundSize: '50px 50px',
       }}
     >
-      <motion.div
+      <div
         className="absolute inset-0"
         style={{
           background: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 100%)",
@@ -291,7 +300,7 @@ export function ParallaxSection({ children, speed = 0.5 }: { children: React.Rea
   );
 }
 
-export function MagicCircle({ size = 400, className = "", animate = true }: { size?: number; className?: string; animate?: boolean }) {
+export function MagicCircle({ size = 400, className = "", animate = true, speedMultiplier = 1 }: { size?: number; className?: string; animate?: boolean; speedMultiplier?: number }) {
   return (
     <div className={`relative ${className}`} style={{ width: size, height: size }}>
       {/* Outer Ring */}
@@ -301,7 +310,7 @@ export function MagicCircle({ size = 400, className = "", animate = true }: { si
         viewBox="0 0 400 400"
         className="absolute inset-0"
         animate={animate ? { rotate: 360 } : {}}
-        transition={animate ? { duration: 30, repeat: Infinity, ease: "linear" } : {}}
+        transition={animate ? { duration: 30 * speedMultiplier, repeat: Infinity, ease: "linear" } : {}}
       >
         <defs>
           <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -342,7 +351,7 @@ export function MagicCircle({ size = 400, className = "", animate = true }: { si
         viewBox="0 0 400 400"
         className="absolute inset-0"
         animate={animate ? { rotate: -360 } : {}}
-        transition={animate ? { duration: 25, repeat: Infinity, ease: "linear" } : {}}
+        transition={animate ? { duration: 25 * speedMultiplier, repeat: Infinity, ease: "linear" } : {}}
       >
         <circle
           cx="200"
@@ -377,7 +386,7 @@ export function MagicCircle({ size = 400, className = "", animate = true }: { si
         viewBox="0 0 400 400"
         className="absolute inset-0"
         animate={animate ? { rotate: 360 } : {}}
-        transition={animate ? { duration: 20, repeat: Infinity, ease: "linear" } : {}}
+        transition={animate ? { duration: 20 * speedMultiplier, repeat: Infinity, ease: "linear" } : {}}
       >
         <circle
           cx="200"
@@ -417,7 +426,7 @@ export function MagicCircle({ size = 400, className = "", animate = true }: { si
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.6, 0.3],
           } : {}}
-          transition={animate ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
+          transition={animate ? { duration: 3 * speedMultiplier, repeat: Infinity, ease: "easeInOut" } : {}}
           style={{ filter: "blur(20px)" }}
         />
       </div>
@@ -425,15 +434,15 @@ export function MagicCircle({ size = 400, className = "", animate = true }: { si
   );
 }
 
-export function MiniMagicCircle({ className = "" }: { className?: string }) {
+export function MiniMagicCircle({ className = "", animate = true }: { className?: string; animate?: boolean }) {
   return (
     <motion.svg
       width="60"
       height="60"
       viewBox="0 0 60 60"
       className={className}
-      animate={{ rotate: 360 }}
-      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+      animate={animate ? { rotate: 360 } : {}}
+      transition={animate ? { duration: 10, repeat: Infinity, ease: "linear" } : {}}
     >
       <circle
         cx="30"

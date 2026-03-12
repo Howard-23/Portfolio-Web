@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { FloatingParticles, MagicCircle, MiniMagicCircle, GlowingOrbs, StarField, NebulaClouds, GridOverlay } from "@/components/AnimatedBackground";
 
 // Experience data
 const experience = [
   {
     date: "2025 - 2026",
-    role: "Fullstack Developer",
+    role: "Front-End Developer & Mobile Developer",
     company: "PrimeX Ventures",
     description: "Develop custom web applications and websites for clients using modern technologies. Focus on creating responsive, accessible, and performant user interfaces.",
   },
@@ -16,63 +16,103 @@ const experience = [
     date: "2025 - Present",
     role: "Junior Web Developer",
     company: "Freelance / Self-Employed",
-    description: "Assisted in the development of client websites and web applications. Gained hands-on experience with fullstack technologies and industry best practices.",
+    description: "Assisted in the development of client websites and web applications. Gained hands-on experience with front-end technologies and industry best practices.",
+  },
+  {
+    date: "2024 - 2025",
+    role: "Technical Support Engineer",
+    company: "Freelance / ActionLabs IT Solutions",
+    description: "Provided technical support for web platforms and digital tools by troubleshooting issues, guiding users, and escalating complex incidents to developers.",
+  },
+  {
+    date: "2025 - 2025",
+    role: "Virtual Assistant & Web Support Specialist",
+    company: "Freelance / Self-Employed",
+    description: "Provided comprehensive virtual assistance while supporting web operations. Managed customer communications and performed basic Shopify customizations.",
   },
 ];
-// Tech stack data
-const techStack = [
-  { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/FFFFFF" },
-  { name: "Node JS", logo: "https://cdn.simpleicons.org/nodedotjs/339933" },
-  { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
-  { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6" },
-  { name: "GitHub Desktop", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
-  { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4" },
-  { name: "MySQL", logo: "https://cdn.simpleicons.org/mysql/4479A1" },
-  { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/F7DF1E" },
-  { name: "React JS", logo: "https://cdn.simpleicons.org/react/61DAFB" },
-  { name: "GitHub", logo: "https://cdn.simpleicons.org/github/181717" },
-  { name: "VSCode", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" },
-  { name: "Laravel", logo: "https://cdn.simpleicons.org/laravel/FF2D20" },
-  { name: "HTML5", logo: "https://cdn.simpleicons.org/html5/E34F26" },
+// Tech stack data grouped by domain
+const techStackGroups = [
+  {
+    title: "Frontend",
+    items: [
+      { name: "Next JS", logo: "https://john-howard.vercel.app/logos/nextjs.svg" },
+      { name: "React JS", logo: "https://cdn.simpleicons.org/react/61DAFB" },
+      { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6" },
+      { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/F7DF1E" },
+      { name: "HTML5", logo: "https://cdn.simpleicons.org/html5/E34F26" },
+      { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+      { name: "Flutter", logo: "https://cdn.simpleicons.org/flutter/02569B" },
+    ],
+  },
+  {
+    title: "Backend & Databases",
+    items: [
+      { name: "Node JS", logo: "https://cdn.simpleicons.org/nodedotjs/339933" },
+      { name: "Java", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
+      { name: "Laravel", logo: "https://cdn.simpleicons.org/laravel/FF2D20" },
+      { name: "PHP", logo: "https://cdn.simpleicons.org/php/777BB4" },
+      { name: "MySQL", logo: "https://cdn.simpleicons.org/mysql/4479A1" },
+      { name: "PostgreSQL", logo: "https://cdn.simpleicons.org/postgresql/4169E1" },
+      { name: "Supabase", logo: "https://cdn.simpleicons.org/supabase/3ECF8E" },
+      { name: "Firebase", logo: "https://cdn.simpleicons.org/firebase/DD2C00" },
+      { name: "Neon", logo: "https://john-howard.vercel.app/logos/neon.svg" },
+      { name: "Python", logo: "https://cdn.simpleicons.org/python/3776AB" },
+    ],
+  },
+  {
+    title: "Other Tools",
+    items: [
+      { name: "GitHub", logo: "https://cdn.simpleicons.org/github/181717" },
+      { name: "GitHub Desktop", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
+      { name: "VSCode", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" },
+      { name: "WordPress", logo: "https://cdn.simpleicons.org/wordpress/21759B" },
+      { name: "Netlify", logo: "https://cdn.simpleicons.org/netlify/00C7B7" },
+      { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/000000" },
+      { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
+    ],
+  },
 ];
 const contactEmail = "johnhowardgarcia17@gmail.com";
-const githubUrl = "https://github.com/Howard-23/Howard";
+const githubUrl = "https://github.com/Howard-23/Howard-23";
 const linkedinUrl = "https://www.linkedin.com/in/john-howard-garcia-31a075390/";
 const contactPrefill = {
   name: "John Howard Garcia...",
   email: "johnhowardgarcia17@gmail.com...",
-  subject: "System, UI, Website, and etc. Development Inquiry...",
-  message: "Contact me for inquiries about your system, website even designing and etc. I am open to collaborate and help you to achieve your goals...",
+  subject: "Project inquiry...",
+  message: "Tell me about your project and goals. I am open to collaborate and help you achieve them...",
 } as const;
 type ContactField = keyof typeof contactPrefill;
 const aboutRuntimeLines = [
-  'const role = "Fullstack & Mobile Developer";',
+  'const role = "Fullstack Developer & Mobile Developer";',
   'const status = "Open to opportunities";',
   'const location = "Philippines";',
   "const stack = [",
-  '  "Next.js", "Node JS", "CSS3", "TypeScript",',
-  '  "GitHub Desktop",',
-  '  "PHP", "MySQL", "JavaScript", "React JS",',
-  '  "GitHub", "VSCode", "Laravel", "HTML5"',
+  '  "Next JS", "React JS", "TypeScript", "JavaScript",',
+  '  "HTML5", "CSS3", "Flutter", "Node JS", "Java",',
+  '  "Laravel", "PHP", "MySQL", "PostgreSQL", "Supabase",',
+  '  "Firebase", "Neon", "Python", "GitHub", "VSCode",',
+  '  "WordPress", "Netlify", "Vercel", "Figma"',
   "];",
   "function buildExperience() { return 'Responsive, user-focused products'; }",
   "console.log('Ready to collaborate on your next project.');",
 ];
 // Projects data
+const projectLogoBase = "https://john-howard.vercel.app/project-logos";
 const projects = [
   {
     title: "Professional Portfolio",
     description: "A modern, responsive portfolio website built with Next.js and TypeScript. Features dark/light mode toggle, smooth animations, and a clean, professional design optimized for showcasing work.",
-    icon: "https://img.icons8.com/color/96/briefcase.png",
+    icon: `${projectLogoBase}/professional-portfolio.svg`,
     tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
     status: "Completed",
-    liveDemo: "https://john-howard.vercel.app/",
+    liveDemo: "https://howard-project.vercel.app/",
     viewCode: "https://github.com/Howard-23/Howard",
   },
   {
     title: "E-Commerce Dashboard",
     description: "A comprehensive dashboard for managing online store operations. Features real-time analytics, order management, and inventory tracking with an intuitive user interface.",
-    icon: "https://img.icons8.com/color/96/combo-chart.png",
+    icon: `${projectLogoBase}/ecommerce-dashboard.svg`,
     tech: ["Next.js", "TypeScript", "Tailwind CSS", "Recharts"],
     status: "Completed",
     liveDemo: "https://e-commerce-psi-dusky-70.vercel.app/",
@@ -81,7 +121,7 @@ const projects = [
   {
     title: "Attendance System",
     description: "A New Attendance Monitoring that helps a company and the employees to monitor their attendance",
-    icon: "https://img.icons8.com/color/96/calendar.png",
+    icon: `${projectLogoBase}/attendance-system.svg`,
     tech: ["Next.js", "Tailwind CSS", "TypeScript"],
     status: "Completed",
     liveDemo: "https://attandance-system.vercel.app/",
@@ -90,17 +130,17 @@ const projects = [
   {
     title: "Barangay System",
     description: "A Modern Barangay System that Helps other to request their clearance and etc also helps barangay to know the population in their barangay",
-    icon: "https://img.icons8.com/color/96/city.png",
-    tech: ["Next.js", "Tailwind CSS", "TypeScript"],
+    icon: `${projectLogoBase}/barangay-system.svg`,
+    tech: ["Next.js", "Tailwind CSS", "TypeScript", "Supabase", "Prisma", "Laravel", "PostgreSQL"],
     status: "Completed",
-    liveDemo: "https://barangay-three.vercel.app/",
-    viewCode: "https://github.com/Howard-23/barangay",
+    liveDemo: "https://bms-blue.vercel.app/",
+    viewCode: "https://github.com/Howard-23/BMS",
   },
   {
     title: "Office Management System",
     description: "Helps a company and their Employee to track their duties and also to get the goal of the company",
-    icon: "https://img.icons8.com/color/96/office.png",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS"],
+    icon: `${projectLogoBase}/office-management-system.svg`,
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Laravel PostgreSQL", "Firebase", "Neon"],
     status: "Completed",
     liveDemo: "https://office-management-pi.vercel.app/login",
     viewCode: "https://github.com/Howard-23/office-management",
@@ -108,7 +148,7 @@ const projects = [
   {
     title: "CCTV Management System",
     description: "A modern cctv management that helps you to track and report an accident that it will auto detect",
-    icon: "https://img.icons8.com/color/96/webcam.png",
+    icon: `${projectLogoBase}/cctv-management-system.svg`,
     tech: ["Next.js", "Python", "Tailwind CSS", "TypeScript"],
     status: "Completed",
     liveDemo: "https://cctv-management-system-gcyl.vercel.app/dashboard",
@@ -117,7 +157,7 @@ const projects = [
   {
     title: "Prescription Reader",
     description: "It helps all the elderly and pharmacist to read the prescription of the Doctor's that It's Hard to read",
-    icon: "https://img.icons8.com/color/96/pill.png",
+    icon: `${projectLogoBase}/prescription-reader.svg`,
     tech: ["Next.js", "Tailwind CSS", "TypeScript"],
     status: "Completed",
     liveDemo: "https://medi-scan-prescription-scanner.vercel.app/",
@@ -126,7 +166,7 @@ const projects = [
   {
     title: "Task Management App",
     description: "A productivity application for managing tasks and projects. Features drag-and-drop organization, priority levels, and progress tracking to help users stay organized.",
-    icon: "https://img.icons8.com/color/96/todo-list.png",
+    icon: `${projectLogoBase}/task-management-app.svg`,
     tech: ["Next.js", "TypeScript", "Tailwind CSS"],
     status: "Completed",
     liveDemo: "https://task-manager-lime-theta-49.vercel.app/",
@@ -135,7 +175,7 @@ const projects = [
   {
     title: "Shopify Landing Page",
     description: "A custom landing page template designed for Shopify stores. Features sections for products, testimonials, and call-to-action buttons optimized for conversions.",
-    icon: "https://img.icons8.com/color/96/shopping-bag.png",
+    icon: `${projectLogoBase}/shopify-landing-page.svg`,
     tech: ["Next.js", "TypeScript", "Tailwind CSS"],
     status: "Completed",
     liveDemo: "https://shopify-landing-page-omega.vercel.app/",
@@ -144,7 +184,7 @@ const projects = [
   {
     title: "Dental Management System",
     description: "A comprehensive dental clinic management system for scheduling appointments, managing patient records, tracking treatments, and handling billing. Streamlines clinic operations with an intuitive dashboard.",
-    icon: "https://img.icons8.com/color/96/tooth.png",
+    icon: `${projectLogoBase}/dental-management-system.svg`,
     tech: ["Next.js", "TypeScript", "Tailwind CSS"],
     status: "Completed",
     liveDemo: "https://dental-management-system-rose.vercel.app/",
@@ -153,7 +193,7 @@ const projects = [
   {
     title: "Event Sparks",
     description: "A dynamic event management platform built with Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/confetti.png",
+    icon: `${projectLogoBase}/event-sparks.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://event-spark-two.vercel.app/",
@@ -162,7 +202,7 @@ const projects = [
   {
     title: "Habit Harbor",
     description: "A habit tracking application created using Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/goal.png",
+    icon: `${projectLogoBase}/habit-harbor.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://habit-harbor.vercel.app/",
@@ -171,7 +211,7 @@ const projects = [
   {
     title: "Course Craft",
     description: "An educational course platform built with Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/training.png",
+    icon: `${projectLogoBase}/course-craft.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://course-craft-ashy.vercel.app/",
@@ -180,7 +220,7 @@ const projects = [
   {
     title: "Menu Muse",
     description: "A restaurant menu showcase created using Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/restaurant-menu.png",
+    icon: `${projectLogoBase}/menu-muse.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://menu-muse.vercel.app/",
@@ -189,7 +229,7 @@ const projects = [
   {
     title: "Pulse Studio",
     description: "A creative studio site built with Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/audio-wave.png",
+    icon: `${projectLogoBase}/pulse-studio.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://pulse-studio-xi.vercel.app/",
@@ -198,7 +238,7 @@ const projects = [
   {
     title: "Insight Board",
     description: "A dashboard application developed using Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/line-chart.png",
+    icon: `${projectLogoBase}/insight-board.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://insight-board-eight.vercel.app/",
@@ -207,7 +247,7 @@ const projects = [
   {
     title: "Brandkit",
     description: "A branding toolkit platform built with Next.js, CSS3, and HTML5.",
-    icon: "https://img.icons8.com/color/96/color-palette.png",
+    icon: `${projectLogoBase}/brandkit.svg`,
     tech: ["Next.js", "CSS3", "HTML5"],
     status: "Completed",
     liveDemo: "https://brand-kit-nine.vercel.app/",
@@ -217,7 +257,8 @@ const projects = [
 const isImageIcon = (icon: string) => icon.startsWith("http://") || icon.startsWith("https://");
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
   const [contactFormValues, setContactFormValues] = useState({
     name: "",
     email: "",
@@ -227,18 +268,16 @@ export default function Home() {
   const [activeTypingField, setActiveTypingField] = useState<ContactField | null>(null);
   const contactSectionRef = useRef<HTMLElement | null>(null);
   const isContactInView = useInView(contactSectionRef, { once: true, amount: 0.35 });
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const disableAllAnimation = prefersReducedMotion === true;
+  const shouldAnimateHeroBackground = !disableAllAnimation;
+  const shouldAnimateSectionBackground = !disableAllAnimation && !isMobile;
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: (e.clientY / window.innerHeight) * 2 - 1,
-      });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    const media = window.matchMedia("(max-width: 768px), (hover: none) and (pointer: coarse)");
+    const updateMobileState = () => setIsMobile(media.matches);
+    updateMobileState();
+    media.addEventListener("change", updateMobileState);
+    return () => media.removeEventListener("change", updateMobileState);
   }, []);
 
   useEffect(() => {
@@ -295,21 +334,21 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-black-clover-dark relative overflow-hidden">
-      {/* Enhanced Background Layers */}
-      <FloatingParticles count={50} />
-      <GlowingOrbs count={8} />
-      <StarField count={120} />
-      <NebulaClouds />
+      <main className="min-h-screen bg-black-clover-dark relative overflow-hidden">
+        {/* Enhanced Background Layers */}
+      <FloatingParticles count={isMobile ? 12 : 50} disableAnimation={disableAllAnimation} />
+      <GlowingOrbs count={isMobile ? 2 : 8} disableAnimation={disableAllAnimation} />
+      <StarField count={isMobile ? 32 : 120} disableAnimation={disableAllAnimation} />
+      <NebulaClouds disableAnimation={disableAllAnimation} compact={isMobile} />
       <GridOverlay />
 
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col items-center justify-center relative z-10 px-4">
         {/* Multiple Magic Circles for Hero */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <MagicCircle size={700} className="opacity-20 -translate-x-20" />
-          <MagicCircle size={500} className="opacity-15 translate-x-32 translate-y-10" />
-          <MagicCircle size={300} className="opacity-25 -translate-y-20" />
+          <MagicCircle animate={shouldAnimateHeroBackground} size={isMobile ? 360 : 700} className="opacity-20 -translate-x-20" />
+          <MagicCircle animate={shouldAnimateHeroBackground} size={isMobile ? 260 : 500} className="opacity-15 translate-x-32 translate-y-10" />
+          <MagicCircle animate={shouldAnimateHeroBackground} size={isMobile ? 180 : 300} className="opacity-25 -translate-y-20" />
         </div>
 
         <motion.div
@@ -318,7 +357,7 @@ export default function Home() {
         >
           {/* Mini Magic Circle */}
           <div className="flex justify-center mb-8">
-            <MiniMagicCircle className="text-8xl" />
+            <MiniMagicCircle className="text-8xl" animate={shouldAnimateHeroBackground} />
           </div>
 
           <motion.h1
@@ -410,9 +449,9 @@ export default function Home() {
       <section id="about" className="min-h-screen py-20 px-4 relative z-10">
         {/* Multiple Magic Circles Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-          <MagicCircle size={450} className="-translate-x-32 -translate-y-20" />
-          <MagicCircle size={300} className="translate-x-40 translate-y-10 opacity-40" />
-          <MagicCircle size={200} className="-translate-x-20 translate-y-32 opacity-30" />
+          <MagicCircle animate={shouldAnimateSectionBackground} speedMultiplier={1.8} size={450} className="-translate-x-32 -translate-y-20" />
+          <MagicCircle animate={shouldAnimateSectionBackground} speedMultiplier={1.8} size={300} className="translate-x-40 translate-y-10 opacity-40" />
+          <MagicCircle animate={shouldAnimateSectionBackground} speedMultiplier={1.8} size={200} className="-translate-x-20 translate-y-32 opacity-30" />
         </div>
         
         <motion.div
@@ -438,7 +477,7 @@ export default function Home() {
             >
               <h3 className="text-3xl font-bold text-e94560 mb-4">Get To Know Me</h3>
               <p className="text-gray-300 leading-relaxed mb-6">
-                I'm a passionate Fullstack and Mobile Developer based in the Philippines. 
+                I'm a passionate Fullstack Developer and Mobile Developer based in the Philippines. 
                 With a strong foundation in modern web technologies and a keen eye for detail, 
                 I help businesses establish their digital presence and streamline their operations.
               </p>
@@ -467,7 +506,6 @@ export default function Home() {
                 { label: "Years Experience", value: "1+" },
                 { label: "Projects Completed", value: "8+" },
                 { label: "Happy Clients", value: "3+" },
-                { label: "Technologies", value: "10+"},
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -489,9 +527,9 @@ export default function Home() {
       <section id="skills" className="min-h-screen py-20 px-3 md:px-6 relative z-10">
         {/* Multiple Magic Circles Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-15">
-          <MagicCircle size={400} className="-translate-x-40 translate-y-20" />
-          <MagicCircle size={280} className="translate-x-32 -translate-y-16 opacity-35" />
-          <MagicCircle size={180} className="-translate-x-16 translate-y-36 opacity-25" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={400} className="-translate-x-40 translate-y-20" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={280} className="translate-x-32 -translate-y-16 opacity-35" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={180} className="-translate-x-16 translate-y-36 opacity-25" />
         </div>
         <motion.div
           initial={false}
@@ -508,21 +546,30 @@ export default function Home() {
             <div className="mb-5 md:mb-6">
               <h3 className="text-4xl font-bold text-white">Technical Stacks</h3>
             </div>
-            <div className="flex flex-wrap gap-4">
-              {techStack.map((tech, index) => (
-                <motion.div
-                  key={tech.name}
-                  initial={false}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.04 }}
-                  whileHover={{ y: -2 }}
-                  className="flex items-center gap-2 rounded-[10px] border border-[#4a69a4] bg-[#0b1734]/85 px-5 py-3 text-base font-semibold text-[#d0ddf7] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center">
-                    <img src={tech.logo} alt={`${tech.name} logo`} className="h-5 w-5 object-contain" />
-                  </span>
-                  <span>{tech.name}</span>
-                </motion.div>
+            <div className="space-y-5">
+              {techStackGroups.map((group, groupIndex) => (
+                <div key={group.title}>
+                  <h4 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-[#9db8e6]">
+                    {group.title}
+                  </h4>
+                  <div className="flex flex-wrap gap-4">
+                    {group.items.map((tech, itemIndex) => (
+                      <motion.div
+                        key={tech.name}
+                        initial={false}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: groupIndex * 0.1 + itemIndex * 0.03 }}
+                        whileHover={{ y: -2 }}
+                        className="flex items-center gap-2 rounded-[10px] border border-[#4a69a4] bg-[#0b1734]/85 px-5 py-3 text-base font-semibold text-[#d0ddf7] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                      >
+                        <span className="flex h-7 w-7 items-center justify-center">
+                          <img src={tech.logo} alt={`${tech.name} logo`} className="h-5 w-5 object-contain" />
+                        </span>
+                        <span>{tech.name}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </motion.div>
@@ -532,9 +579,9 @@ export default function Home() {
       <section id="experience" className="min-h-screen py-20 px-4 relative z-10">
         {/* Multiple Magic Circles Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-          <MagicCircle size={450} className="translate-x-24 -translate-y-10" />
-          <MagicCircle size={320} className="-translate-x-36 translate-y-14 opacity-40" />
-          <MagicCircle size={220} className="translate-x-28 translate-y-32 opacity-30" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={450} className="translate-x-24 -translate-y-10" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={320} className="-translate-x-36 translate-y-14 opacity-40" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={220} className="translate-x-28 translate-y-32 opacity-30" />
         </div>
         
         <motion.div
@@ -579,9 +626,9 @@ export default function Home() {
       <section id="projects" className="min-h-screen py-20 px-4 relative z-10">
         {/* Multiple Magic Circles Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-15">
-          <MagicCircle size={380} className="-translate-x-28 translate-y-20" />
-          <MagicCircle size={260} className="translate-x-36 -translate-y-12 opacity-35" />
-          <MagicCircle size={160} className="-translate-x-20 translate-y-40 opacity-25" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={380} className="-translate-x-28 translate-y-20" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={260} className="translate-x-36 -translate-y-12 opacity-35" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={160} className="-translate-x-20 translate-y-40 opacity-25" />
         </div>
         
         <motion.div
@@ -677,9 +724,9 @@ export default function Home() {
       <section id="contact" ref={contactSectionRef} className="min-h-screen py-20 px-4 relative z-10">
         {/* Multiple Magic Circles Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-          <MagicCircle size={420} className="translate-x-20 -translate-y-20" />
-          <MagicCircle size={300} className="-translate-x-40 translate-y-8 opacity-40" />
-          <MagicCircle size={200} className="translate-x-36 translate-y-28 opacity-30" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={420} className="translate-x-20 -translate-y-20" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={300} className="-translate-x-40 translate-y-8 opacity-40" />
+          <MagicCircle animate={shouldAnimateSectionBackground} size={200} className="translate-x-36 translate-y-28 opacity-30" />
         </div>
         
         <motion.div

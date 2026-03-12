@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "John Howard Garcia - Fullstack & Mobile Developer",
   description: "Portfolio of John Howard Garcia, a Fullstack and Mobile Developer based in the Philippines.",
+  icons: {
+    icon: "/JHG.png",
+    shortcut: "/JHG.png",
+    apple: "/JHG.png",
+  },
 };
 
 export default function RootLayout({

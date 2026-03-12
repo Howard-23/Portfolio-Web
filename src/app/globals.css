@@ -119,7 +119,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  animation: code-scroll 14s linear infinite;
+  animation: code-scroll 24s linear infinite;
 }
 
 .code-runner-line {
